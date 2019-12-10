@@ -31,7 +31,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let cliente of clientes; let i = index">
-                <td>{{i+1}}</td>
+                <td>{{i+ 1 }}</td>
                 <td>{{cliente.nombre}} {{cliente.apellido}}</td>
                 <td>{{cliente.saldo | currency: 'COP': '$'}}</td>
                 <td>
@@ -59,7 +59,7 @@
           <div class="card-body">
             <h3>Total Clientes</h3>
             <h4 class="display-4">
-              <i class="fa-user"></i> {{clientes?.length}}
+              <i class="fas fa-user"></i> {{clientes?.length}}
             </h4>
           </div>
         </div>
@@ -75,80 +75,63 @@
     <div class="modal-content">
       <div class="modal-header bg-info text-white">
         <h5 class="modal-title">Agregar Cliente</h5>
-        <button class="close" data-dismiss="modal">
+        <button class="close" data-dismiss="modal" #botonCerrar>
           <span>&times;</span>
         </button>
       </div>
 
       <flash-messages></flash-messages>
 
-      <form #clienteForm="ngForm" (ngSubmit)="agregar(clienteForm)">
+      <form #ngValidadorInicial="ngForm" (ngSubmit)="agregar(clienteForm)" ngDefaultControl novalidate>
         <div class="modal-body">
 
           <div class="form-group">
             <label for="nombre">Nombre</label>
-            <input 
-            type="text" 
-            name="nombre" 
-            class="form-control" 
-            #nombre="ngModel" 
-            [(ngModel)]="cliente.nombre" 
-            [ngClass]="{'is-invalid': nombre.errors && nombre.touched }" required minlength="2">
-            <div [hidden]="!nombre.errors?.required" class="invalid-feedback">
+            <input type="text" id="nombre" name="nombre" class="form-control" #nombreM="ngModel" autocomplete="off"
+              [(ngModel)]="cliente.nombre" [ngClass]="{'is-invalid': nombre.errors && nombre.touched }" required
+              minlength="2">
+            <div *ngIf="utilidadesService.esCampoInvalido(nombreM, 'required')" class="invalid-tooltip">
               Nombre requerido
             </div>
-            <div [hidden]="!nombre.errors?.minlength" class="invalid-feedback">
+            <div *ngIf="utilidadesService.esCampoInvalido(nombreM, 'minlength')" class="invalid-tooltip">
               Debe contener al menos 2 caracteres
             </div>
           </div>
 
           <div class="form-group">
             <label for="apellido">Apellido</label>
-            <input 
-            type="text" 
-            name="apellido" 
-            class="form-control"
-            #apellido="ngModel" 
-            [(ngModel)]="cliente.apellido" 
-            [ngClass]="{'is-invalid': apellido.errors && apellido.touched }" required minlength="2">
-           <div [hidden]="!apellido.errors?.required" class="invalid-feedback">
-             Apellido requerido
-           </div>
-           <div [hidden]="!apellido.errors?.minlength" class="invalid-feedback">
-             Debe contener al menos 2 caracteres
-           </div>
+            <input type="text" name="apellido" autocomplete="off" class="form-control" #apellidoM="ngModel"
+              [(ngModel)]="cliente.apellido" [ngClass]="{'is-invalid': apellido.errors && apellido.touched }" required
+              minlength="2">
+            <div *ngIf="utilidadesService.esCampoInvalido(apellidoM, 'required')" class="invalid-tooltip">
+              Apellido requerido
+            </div>
+            <div *ngIf="utilidadesService.esCampoInvalido(apellidoM, 'minlength')" class="invalid-tooltip">
+              Debe contener al menos 2 caracteres
+            </div>
           </div>
 
           <div class="form-group">
             <label for="email">Email</label>
-            <input 
-            type="email" 
-            name="email" 
-            class="form-control"
-            #email="ngModel" 
-            [(ngModel)]="cliente.email" 
-            [ngClass]="{'is-invalid': email.errors && email.touched }" required minlength="2"
-            pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$">
-           <div [hidden]="!email.errors?.required" class="invalid-feedback">
-             Email requerido
-           </div>
-           <div [hidden]="!email.errors?.pattern" class="invalid-feedback">
-             Email no es valido
-           </div>
+            <input type="email" name="email" autocomplete="off" class="form-control" #emailM="ngModel"
+              [(ngModel)]="cliente.email" [ngClass]="{'is-invalid': email.errors && email.touched }" required
+              minlength="2" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$">
+            <div *ngIf="utilidadesService.esCampoInvalido(emailM, 'required')" class="invalid-tooltip">
+              Email requerido
+            </div>
+            <div *ngIf="utilidadesService.esCampoInvalido(emailM, 'required')" class="invalid-tooltip">
+              Email no valido
+            </div>
           </div>
 
           <div class="form-group">
             <label for="saldo">Saldo</label>
-            <input 
-            type="number" 
-            name="saldo" 
-            class="form-control"
-            #saldo="ngModel" 
-            [(ngModel)]="cliente.saldo" 
-            [ngClass]="{'is-invalid': apellido.errors && saldo.touched }" required minlength="2">
-           <div [hidden]="!saldo.errors?.required" class="invalid-feedback">
-             Saldo requerido
-           </div>
+            <input type="number" name="saldo" class="form-control" #saldoM="ngModel" autocomplete="off"
+              [(ngModel)]="cliente.saldo" [ngClass]="{'is-invalid': apellido.errors && saldo.touched }" required
+              minlength="2">
+            <div *ngIf="utilidadesService.esCampoInvalido(saldoM, 'required')" class="invalid-tooltip">
+              Saldo requerido
+            </div>
           </div>
 
           <div class="modal-footer">

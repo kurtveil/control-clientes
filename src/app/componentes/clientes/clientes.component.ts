@@ -1,8 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ClienteServicio } from 'src/app/servicios/cliente.service';
 import { Cliente } from 'src/app/Modelo/cliente.model';
-import { FlashMessagesModule, FlashMessagesService } from 'angular2-flash-messages';
+// import { FlashMessagesModule, FlashMessagesService } from 'angular2-flash-messages';
 import { NgForm } from '@angular/forms';
+import { UtilidadesService } from 'src/app/servicios/utilidades.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-clientes',
@@ -10,8 +12,10 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./clientes.component.css']
 })
 export class ClientesComponent implements OnInit {
+  @ViewChild('ngValidadorInicial', { static: false }) public ngValidadorInicial: NgForm;
   @ViewChild('clienteForm', { static: false }) clienteForm: NgForm;
-  clientes: Cliente[ ];
+  @ViewChild('botonCerrar', { static: false }) botonCerrar: ElementRef;
+  clientes: Cliente[];
   cliente: Cliente = {
     nombre: '',
     apellido: '',
@@ -20,7 +24,9 @@ export class ClientesComponent implements OnInit {
   };
   constructor(
     private clientesServicio: ClienteServicio,
-    private flashMessages: FlashMessagesService) { }
+    // private flashMessages: FlashMessagesService,
+    public utilidadesService: UtilidadesService,
+  ) { }
 
   ngOnInit() {
     this.clientesServicio.obtenerClientes().subscribe(
@@ -32,24 +38,31 @@ export class ClientesComponent implements OnInit {
   obtenerSaldoTotal() {
     let saldoTotal = 0;
     if (this.clientes) {
-      this.clientes.forEach( clientes => {
+      this.clientes.forEach(clientes => {
         saldoTotal += clientes.saldo;
       });
     }
     return saldoTotal;
   }
 
-  agregar({value, valid}: {value: Cliente, valid: boolean}) {
-    if (!valid) {
-      this.flashMessages.show('Por favor llena el formulario correctamente' , {
-        cssClass: 'alert-danger', timeout: 4000
-      });
+  agregar({ value, valid }: { value: Cliente, valid: boolean }) {
+    if (!this.utilidadesService.esFormularioValido(this.ngValidadorInicial)) {
+      //  Swal.fire({
+      //   type: 'warning',
+      //   title: 'Campos obligatorios',
+      //   text: 'Asegurese de diligencaiar todos los campos',
+      //   footer: ''
+      // });
+      // return;
     } else {
-      // agregar el nuevo cliente
       this.clientesServicio.agregarCliente(value);
       this.clienteForm.resetForm();
-
+      this.cerrarModal();
     }
+    // agregar el nuevo cliente
+  }
+  private cerrarModal() {
+    this.botonCerrar.nativeElement.click();
   }
 
 }
